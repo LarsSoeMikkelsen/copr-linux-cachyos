@@ -33,7 +33,7 @@
 # the kernel
 %define _nv_pkg open-gpu-kernel-modules-%{_nv_ver}
 %if 0%{?fedora} >= 43
-    %define _build_nv 1
+    %define _build_nv 0 # temporarily disabled
     %define _nv_ver 580.119.02
 %elif 0%{?rhel}
     %define _build_nv 0
