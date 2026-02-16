@@ -33,15 +33,10 @@
 # the kernel
 %define _nv_pkg open-gpu-kernel-modules-%{_nv_ver}
 %if 0%{?fedora} >= 43
-    # temporarily disabled, should normally be 1
-    %define _build_nv 0 
-    %define _nv_ver 580.119.02
-%elif 0%{?rhel}
-    %define _build_nv 0
+    %define _build_nv 1 
+    %define _nv_ver 590.48.01
 %else
-    %define _build_nv 1
-    %define _nv_ver 580.119.02
-    %define _nv_old 1
+    %define _build_nv 0
 %endif
 
 # Define the tickrate used by the kernel
