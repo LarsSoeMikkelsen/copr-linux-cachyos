@@ -110,7 +110,8 @@ BuildRequires:  gcc-c++
 %endif
 
 # Indexes 0-9 are reserved for the kernel. 10-19 will be reserved for NVIDIA
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-%{_tarkver}.tar.xz
+# Source0:        https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-%{_tarkver}.tar.xz
+Source0:        https://git.kernel.org/torvalds/t/linux-7.0-rc1.tar.gz
 Source1:        https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config
 
 %if %{_build_minimal}
