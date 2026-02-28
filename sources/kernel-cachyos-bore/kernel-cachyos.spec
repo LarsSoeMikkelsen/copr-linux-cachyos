@@ -131,6 +131,7 @@ Source10:       https://github.com/NVIDIA/open-gpu-kernel-modules/archive/%{_nv_
 Patch0:         %{_patch_src}/all/0001-cachyos-base-all.patch
 Patch1:         %{_patch_src}/sched/0001-bore-cachy.patch
 Patch2:         %{_patch_src}/misc/nap-governor.patch
+Patch3:         %{_patch_src}/0004-fixes.patch
 
 %description
     The meta package for %{name}.
