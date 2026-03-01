@@ -128,10 +128,10 @@ Source2:        https://raw.githubusercontent.com/Frogging-Family/linux-tkg/mast
 Source10:       https://github.com/NVIDIA/open-gpu-kernel-modules/archive/%{_nv_ver}/%{_nv_pkg}.tar.gz
 %endif
 
-Patch0:         %{_patch_src}/0004-fixes.patch
+Patch0:         %{_patch_src}/misc/nap-governor.patch
 Patch1:         %{_patch_src}/all/0001-cachyos-base-all.patch
 Patch2:         %{_patch_src}/sched/0001-bore-cachy.patch
-# Patch2:         %{_patch_src}/misc/nap-governor.patch
+
 
 
 %description
