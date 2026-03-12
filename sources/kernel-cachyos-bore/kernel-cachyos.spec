@@ -15,19 +15,9 @@
 %define _rpmver %{version}-%{release}
 %define _kver %{_rpmver}.%{_arch}
 
-%if %{_stablekver} == 0
-    %define _tarkver %{_basekver}
-%else
-    %define _tarkver %{version}
-%endif
+%define _tarkver %{version}
 
-# Build a minimal a kernel via modprobed.db
-# file to reduce build times
-%define _build_minimal 0
-
-# Builds the kernel with clang and enables
-# ThinLTO
-%define _build_lto 0
+%define _tag cachyos-%{_tarkver}-1
 
 # Define the tickrate used by the kernel
 # Valid values: 100, 250, 300, 500, 600, 750 and 1000
@@ -49,12 +39,8 @@
 
 %define _patch_src https://raw.githubusercontent.com/CachyOS/kernel-patches/master/%{_basekver}
 
-%if %{_build_lto}
-    # Define build environment variables to build the kernel with clang
-    %define _lto_args CC=clang CXX=clang++ LD=ld.lld LLVM=1 LLVM_IAS=1
-%endif
 
-%define _module_args KERNEL_UNAME=%{_kver} IGNORE_PREEMPT_RT_PRESENCE=1 SYSSRC=%{_builddir}/linux-%{_tarkver} SYSOUT=%{_builddir}/linux-%{_tarkver}
+%define _module_args KERNEL_UNAME=%{_kver} IGNORE_PREEMPT_RT_PRESENCE=1 SYSSRC=%{_builddir}/linux-%{_tag} SYSOUT=%{_builddir}/linux-%{_tag}
 
 Name:           kernel-cachyos%{?_lto_args:-lto}
 Summary:        Linux BORE %{?_lto_args:+ LTO }Cachy Sauce Kernel by CachyOS with other patches and improvements.
@@ -88,23 +74,13 @@ BuildRequires:  perl-interpreter
 BuildRequires:  python3-devel
 BuildRequires:  python3-pyyaml
 BuildRequires:  python-srpm-macros
-
-%if %{_build_lto}
 BuildRequires:  clang
 BuildRequires:  lld
 BuildRequires:  llvm
-%endif
 
 # Indexes 0-9 are reserved for the kernel. 10-19 will be reserved for NVIDIA
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-%{_tarkver}.tar.xz
+Source0:        https://github.com/CachyOS/linux/archive/refs/tags/%{_tag}.tar.gz
 Source1:        https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config
-
-%if %{_build_minimal}
-# The default modprobed.db provided is used for linux-cachyos CI.
-# This should not be used for production and ideally should only be used for compile tests.
-# Note that any modprobed.db file is accepted
-Source2:        https://raw.githubusercontent.com/Frogging-Family/linux-tkg/master/linux-tkg-config/%{_basekver}/minimal-modprobed.db
-%endif
 
 Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
 
@@ -112,7 +88,7 @@ Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
     The meta package for %{name}.
 
 %prep
-%setup -q %{?SOURCE10:-b 10} -n linux-%{_tarkver}
+%setup -q %{?SOURCE10:-b 10} -n linux-%{_tag}
 %autopatch -p1 -v -M 9
 
     cp %{SOURCE1} .config
@@ -151,17 +127,8 @@ Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
     scripts/config -e CONFIG_IMA_APPRAISE
     scripts/config -e CONFIG_IMA_ARCH_POLICY
 
-    %if %{_build_lto}
-        scripts/config -e LTO_CLANG_THIN
-    %endif
-
-    %if %{_build_minimal}
-        %make_build LSMOD=%{SOURCE2} localmodconfig
-    %else
-        %make_build olddefconfig
-    %endif
-
     diff -u %{SOURCE1} .config || :
+
 
 %build
     %make_build EXTRAVERSION=-%{release}.%{_arch} all
@@ -386,14 +353,6 @@ Requires:       elfutils-libelf-devel
 Requires:       bison
 Requires:       flex
 Requires:       make
-
-%if %{_build_lto}
-Requires:       clang
-Requires:       lld
-Requires:       llvm
-%else
-Requires:       gcc
-%endif
 
 %description devel
     This package provides kernel headers and makefiles sufficient to build modules against %{name}.
