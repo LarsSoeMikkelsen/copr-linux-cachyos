@@ -43,7 +43,7 @@
 %define _kernel_dir /lib/modules/%{_kver}
 %define _devel_dir %{_usrsrc}/kernels/%{_kver}
 
-%define _patch_src https://raw.githubusercontent.com/CachyOS/kernel-patches/master/%{_basekvershort}
+%define _patch_src https://raw.githubusercontent.com/CachyOS/kernel-patches/master/%{_basekver}
 
 
 %define _module_args KERNEL_UNAME=%{_kver} IGNORE_PREEMPT_RT_PRESENCE=1 SYSSRC=%{_builddir}/linux-%{_tag} SYSOUT=%{_builddir}/linux-%{_tag}
