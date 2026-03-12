@@ -15,7 +15,8 @@
 %define _rcver rc3
 %define _rpmver %{version}-%{release}
 %define _kver %{_rpmver}.%{_arch}
-%define _tarkver %{version}
+
+%define _tarkver %{_basekvershort}.%{_stablekver}
 
 %if %{_stablekver} == 0
     %define _basekver %{_basekvershort}.%{_stablekver}
