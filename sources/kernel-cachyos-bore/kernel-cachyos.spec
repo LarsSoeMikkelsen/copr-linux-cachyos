@@ -29,20 +29,6 @@
 # ThinLTO
 %define _build_lto 0
 
-# Builds nvidia-open kernel modules with
-# the kernel
-%define _nv_pkg open-gpu-kernel-modules-%{_nv_ver}
-%if 0%{?fedora} >= 43
-    %define _build_nv 0
-    %define _nv_ver 580.119.02
-%elif 0%{?rhel}
-    %define _build_nv 0
-%else
-    %define _build_nv 1
-    %define _nv_ver 580.119.02
-    %define _nv_old 1
-%endif
-
 # Define the tickrate used by the kernel
 # Valid values: 100, 250, 300, 500, 600, 750 and 1000
 # An invalid value will not fail and continue to use
@@ -109,10 +95,6 @@ BuildRequires:  lld
 BuildRequires:  llvm
 %endif
 
-%if %{_build_nv}
-BuildRequires:  gcc-c++
-%endif
-
 # Indexes 0-9 are reserved for the kernel. 10-19 will be reserved for NVIDIA
 Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-%{_tarkver}.tar.xz
 Source1:        https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config
@@ -128,8 +110,8 @@ Source2:        https://raw.githubusercontent.com/Frogging-Family/linux-tkg/mast
 Source10:       https://github.com/NVIDIA/open-gpu-kernel-modules/archive/%{_nv_ver}/%{_nv_pkg}.tar.gz
 %endif
 
-Patch0:         %{_patch_src}/all/0001-cachyos-base-all.patch
-Patch1:         %{_patch_src}/sched/0001-bore-cachy.patch
+Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
+    
 
 
 
