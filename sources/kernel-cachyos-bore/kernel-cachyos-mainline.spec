@@ -10,34 +10,18 @@
 %undefine _include_frame_pointers
 
 # Linux Kernel Versions
-%define _basekver 6.19
+%define _basekver 7
 %define _stablekver 0
+%define _rcver rc3
 %define _rpmver %{version}-%{release}
 %define _kver %{_rpmver}.%{_arch}
 
-%if %{_stablekver} == 0
-    %define _tarkver %{_basekver}
-%else
-    %define _tarkver %{version}
-%endif
+%define _tarkver %{version}
 
-# Build a minimal a kernel via modprobed.db
-# file to reduce build times
-%define _build_minimal 0
 
-# Builds the kernel with clang and enables
-# ThinLTO
-%define _build_lto 0
+%define _tag cachyos-%{_tarkver}-%{_rcver}-1
 
-# Builds nvidia-open kernel modules with
-# the kernel
-%define _nv_pkg open-gpu-kernel-modules-%{_nv_ver}
-%if 0%{?fedora} >= 43
-    %define _build_nv 1 
-    %define _nv_ver 590.48.01
-%else
-    %define _build_nv 0
-%endif
+
 
 # Define the tickrate used by the kernel
 # Valid values: 100, 250, 300, 500, 600, 750 and 1000
@@ -59,14 +43,10 @@
 
 %define _patch_src https://raw.githubusercontent.com/CachyOS/kernel-patches/master/%{_basekver}
 
-%if %{_build_lto}
-    # Define build environment variables to build the kernel with clang
-    %define _lto_args CC=clang CXX=clang++ LD=ld.lld LLVM=1 LLVM_IAS=1
-%endif
 
-%define _module_args KERNEL_UNAME=%{_kver} IGNORE_PREEMPT_RT_PRESENCE=1 SYSSRC=%{_builddir}/linux-%{_tarkver} SYSOUT=%{_builddir}/linux-%{_tarkver}
+%define _module_args KERNEL_UNAME=%{_kver} IGNORE_PREEMPT_RT_PRESENCE=1 SYSSRC=%{_builddir}/linux-%{_tag} SYSOUT=%{_builddir}/linux-%{_tag}
 
-Name:           kernel-cachyos-mainline%{?_lto_args:-lto}
+Name:           kernel-cachyos%{?_lto_args:-lto}
 Summary:        Linux BORE %{?_lto_args:+ LTO }Cachy Sauce Kernel by CachyOS with other patches and improvements.
 Version:        %{_basekver}.%{_stablekver}
 Release:        cachyos1%{?_lto_args:.lto}%{?dist}
@@ -76,9 +56,9 @@ URL:            https://cachyos.org
 Requires:       kernel-core-uname-r = %{_kver}
 Requires:       kernel-modules-uname-r = %{_kver}
 Requires:       kernel-modules-core-uname-r = %{_kver}
-Provides:       kernel-cachyos-mainline%{?_lto_args:-lto} > 6.12.9-cb1.0%{?_lto_args:.lto}%{?dist}
+Provides:       kernel-cachyos%{?_lto_args:-lto} > 6.12.9-cb1.0%{?_lto_args:.lto}%{?dist}
 Provides:       installonlypkg(kernel)
-Obsoletes:      kernel-cachyos-mainline%{?_lto_args:-lto} <= 6.12.9-cb1.0.lto%{?_lto_args:.lto}%{?dist}
+Obsoletes:      kernel-cachyos%{?_lto_args:-lto} <= 6.12.9-cb1.0.lto%{?_lto_args:.lto}%{?dist}
 
 BuildRequires:  bc
 BuildRequires:  bison
@@ -98,48 +78,21 @@ BuildRequires:  perl-interpreter
 BuildRequires:  python3-devel
 BuildRequires:  python3-pyyaml
 BuildRequires:  python-srpm-macros
-
-%if %{_build_lto}
 BuildRequires:  clang
 BuildRequires:  lld
 BuildRequires:  llvm
-%endif
-
-%if %{_build_nv}
-BuildRequires:  gcc-c++
-%endif
 
 # Indexes 0-9 are reserved for the kernel. 10-19 will be reserved for NVIDIA
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-%{_tarkver}.tar.xz
+Source0:        https://github.com/CachyOS/linux/archive/refs/tags/%{_tag}.tar.gz
 Source1:        https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config
 
-%if %{_build_minimal}
-# The default modprobed.db provided is used for linux-cachyos CI.
-# This should not be used for production and ideally should only be used for compile tests.
-# Note that any modprobed.db file is accepted
-Source2:        https://raw.githubusercontent.com/Frogging-Family/linux-tkg/master/linux-tkg-config/%{_basekver}/minimal-modprobed.db
-%endif
-
-%if %{_build_nv}
-Source10:       https://github.com/NVIDIA/open-gpu-kernel-modules/archive/%{_nv_ver}/%{_nv_pkg}.tar.gz
-%endif
-
-Patch0:         %{_patch_src}/all/0001-cachyos-base-all.patch
-Patch1:         %{_patch_src}/sched/0001-bore-cachy.patch
-
-%if %{_build_lto}
-Patch2:         %{_patch_src}/misc/dkms-clang.patch
-%endif
-
-%if %{_build_nv}
-Patch10:        %{_patch_src}/misc/nvidia/0001-Enable-atomic-kernel-modesetting-by-default.patch
-%endif
+Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
 
 %description
     The meta package for %{name}.
 
 %prep
-%setup -q %{?SOURCE10:-b 10} -n linux-%{_tarkver}
+%setup -q %{?SOURCE10:-b 10} -n linux-%{_tag}
 %autopatch -p1 -v -M 9
 
     cp %{SOURCE1} .config
@@ -178,33 +131,12 @@ Patch10:        %{_patch_src}/misc/nvidia/0001-Enable-atomic-kernel-modesetting-
     scripts/config -e CONFIG_IMA_APPRAISE
     scripts/config -e CONFIG_IMA_ARCH_POLICY
 
-    %if %{_build_lto}
-        scripts/config -e LTO_CLANG_THIN
-    %endif
-
-    %if %{_build_minimal}
-        %make_build LSMOD=%{SOURCE2} localmodconfig
-    %else
-        %make_build olddefconfig
-    %endif
-
     diff -u %{SOURCE1} .config || :
 
-%if %{_build_nv}
-cd %{_builddir}/%{_nv_pkg}/kernel-open
-%patch -P 10 -p1
-cd ..
-%autopatch -p1 -v -m 11 -M 19
-%endif
 
 %build
     %make_build EXTRAVERSION=-%{release}.%{_arch} all
     %make_build -C tools/bpf/bpftool vmlinux.h feature-clang-bpf-co-re=1
-
-    %if %{_build_nv}
-        cd %{_builddir}/%{_nv_pkg}
-        CFLAGS= CXXFLAGS= LDFLAGS= %make_build %{_module_args} IGNORE_CC_MISMATCH=yes modules
-    %endif
 
 %install
     echo "Installing the kernel image..."
@@ -316,14 +248,6 @@ cd ..
     install -dm755 %{buildroot}/boot
     dd if=/dev/zero of=%{buildroot}/boot/initramfs-%{_kver}.img bs=1M count=90
 
-    %if %{_build_nv}
-        cd %{_builddir}/%{_nv_pkg}
-        echo "Installing NVIDIA open kernel modules..."
-        install -Dt %{buildroot}%{_kernel_dir}/nvidia -m644 kernel-open/*.ko
-        find %{buildroot}%{_kernel_dir}/nvidia -name '*.ko' -exec zstd --rm -19 {} +
-        install -Dt %{buildroot}/%{_defaultlicensedir}/%{name}-nvidia-open -m644 COPYING
-    %endif
-
 %package core
 Summary:        Linux BORE Cachy Sauce Kernel by CachyOS with other patches and improvements
 AutoReq:        no
@@ -434,14 +358,6 @@ Requires:       bison
 Requires:       flex
 Requires:       make
 
-%if %{_build_lto}
-Requires:       clang
-Requires:       lld
-Requires:       llvm
-%else
-Requires:       gcc
-%endif
-
 %description devel
     This package provides kernel headers and makefiles sufficient to build modules against %{name}.
 
@@ -470,25 +386,5 @@ Requires:       %{name}-devel = %{_rpmver}
     This meta package is used to install matching core and devel packages for %{name}.
 
 %files devel-matched
-
-%if %{_build_nv}
-%package nvidia-open
-Summary:        nvidia-open %{_nv_ver} kernel modules for %{name}
-Provides:       nvidia-kmod >= %{_nv_ver}
-Provides:       installonlypkg(kernel-module)
-Requires:       kernel-uname-r = %{_kver}
-Conflicts:      akmod-nvidia
-Recommends:     xorg-x11-drv-nvidia >= %{_nv_ver}
-
-%description nvidia-open
-    This package provides nvidia-open %{_nv_ver} kernel modules for %{name}.
-
-%post nvidia-open
-    /sbin/depmod -a %{_kver}
-
-%files nvidia-open
-    %license %{_defaultlicensedir}/%{name}-nvidia-open/COPYING
-    %{_kernel_dir}/nvidia
-%endif
 
 %files
