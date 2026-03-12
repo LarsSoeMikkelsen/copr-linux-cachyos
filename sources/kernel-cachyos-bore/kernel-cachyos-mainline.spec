@@ -10,18 +10,18 @@
 %undefine _include_frame_pointers
 
 # Linux Kernel Versions
-%define _basekver 7
+%define _basekvershort 7
 %define _stablekver 0
 %define _rcver rc3
 %define _rpmver %{version}-%{release}
 %define _kver %{_rpmver}.%{_arch}
 %define _tarkver %{version}
 
-%define _orig_basekver %{_basekver}
 %if %{_stablekver} == 0
-%define _basekver %{_orig_basekver}.%{_stablekver}
+    %define _basekver %{_basekvershort}.%{_stablekver}
+%else
+    %define _basekver %{_basekvershort}
 %endif
-
 
 %define _tag cachyos-%{_tarkver}-%{_rcver}-1
 
