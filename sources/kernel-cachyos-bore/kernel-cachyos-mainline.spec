@@ -17,8 +17,9 @@
 %define _kver %{_rpmver}.%{_arch}
 
 %define _tarkver %{version}
+
 %if %{_stablekver} == 0
-    %define _basekver %{_basekver}.%{_stablekver}
+    _basekver = %{_basekver}.%{_stablekver}
 %endif
 
 %define _tag cachyos-%{_tarkver}-%{_rcver}-1
