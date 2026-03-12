@@ -17,11 +17,11 @@
 %define _kver %{_rpmver}.%{_arch}
 
 %define _tarkver %{version}
-
+%if %{_stablekver} = 0
+    %define _basekver %{_basekver}.%{_stablekver}
+%endif
 
 %define _tag cachyos-%{_tarkver}-%{_rcver}-1
-
-
 
 # Define the tickrate used by the kernel
 # Valid values: 100, 250, 300, 500, 600, 750 and 1000
@@ -85,6 +85,11 @@ BuildRequires:  llvm
 # Indexes 0-9 are reserved for the kernel. 10-19 will be reserved for NVIDIA
 Source0:        https://github.com/CachyOS/linux/archive/refs/tags/%{_tag}.tar.gz
 Source1:        https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config
+
+
+https://github.com/CachyOS/linux/archive/refs/tags/cachyos-7.0-rc3-1.tar.gz
+https://github.com/CachyOS/linux/archive/refs/tags/cachyos-7.0-rc3-1.tar.gz
+https://github.com/CachyOS/linux/archive/refs/tags/cachyos-7.0-rc3-1.tar.gz
 
 Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
 
