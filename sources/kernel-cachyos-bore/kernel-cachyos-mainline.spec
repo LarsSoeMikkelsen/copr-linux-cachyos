@@ -15,12 +15,13 @@
 %define _rcver rc3
 %define _rpmver %{version}-%{release}
 %define _kver %{_rpmver}.%{_arch}
-
 %define _tarkver %{version}
 
+%define _orig_basekver %{_basekver}
 %if %{_stablekver} == 0
-%define _basekver %{_basekver}.%{_stablekver}
+%define _basekver %{_orig_basekver}.%{_stablekver}
 %endif
+
 
 %define _tag cachyos-%{_tarkver}-%{_rcver}-1
 
