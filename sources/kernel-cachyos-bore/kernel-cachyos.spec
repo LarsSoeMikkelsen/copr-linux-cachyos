@@ -106,14 +106,7 @@ Source1:        https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/l
 Source2:        https://raw.githubusercontent.com/Frogging-Family/linux-tkg/master/linux-tkg-config/%{_basekver}/minimal-modprobed.db
 %endif
 
-%if %{_build_nv}
-Source10:       https://github.com/NVIDIA/open-gpu-kernel-modules/archive/%{_nv_ver}/%{_nv_pkg}.tar.gz
-%endif
-
 Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
-    
-
-
 
 %description
     The meta package for %{name}.
@@ -170,21 +163,9 @@ Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
 
     diff -u %{SOURCE1} .config || :
 
-%if %{_build_nv}
-cd %{_builddir}/%{_nv_pkg}/kernel-open
-%patch -P 10 -p1
-cd ..
-%autopatch -p1 -v -m 11 -M 19
-%endif
-
 %build
     %make_build EXTRAVERSION=-%{release}.%{_arch} all
     %make_build -C tools/bpf/bpftool vmlinux.h feature-clang-bpf-co-re=1
-
-    %if %{_build_nv}
-        cd %{_builddir}/%{_nv_pkg}
-        CFLAGS= CXXFLAGS= LDFLAGS= %make_build %{_module_args} IGNORE_CC_MISMATCH=yes modules
-    %endif
 
 %install
     echo "Installing the kernel image..."
@@ -295,14 +276,6 @@ cd ..
     echo "Creating stub initramfs..."
     install -dm755 %{buildroot}/boot
     dd if=/dev/zero of=%{buildroot}/boot/initramfs-%{_kver}.img bs=1M count=90
-
-    %if %{_build_nv}
-        cd %{_builddir}/%{_nv_pkg}
-        echo "Installing NVIDIA open kernel modules..."
-        install -Dt %{buildroot}%{_kernel_dir}/nvidia -m644 kernel-open/*.ko
-        find %{buildroot}%{_kernel_dir}/nvidia -name '*.ko' -exec zstd --rm -19 {} +
-        install -Dt %{buildroot}/%{_defaultlicensedir}/%{name}-nvidia-open -m644 COPYING
-    %endif
 
 %package core
 Summary:        Linux BORE Cachy Sauce Kernel by CachyOS with other patches and improvements
@@ -450,25 +423,5 @@ Requires:       %{name}-devel = %{_rpmver}
     This meta package is used to install matching core and devel packages for %{name}.
 
 %files devel-matched
-
-%if %{_build_nv}
-%package nvidia-open
-Summary:        nvidia-open %{_nv_ver} kernel modules for %{name}
-Provides:       nvidia-kmod >= %{_nv_ver}
-Provides:       installonlypkg(kernel-module)
-Requires:       kernel-uname-r = %{_kver}
-Conflicts:      akmod-nvidia
-Recommends:     xorg-x11-drv-nvidia >= %{_nv_ver}
-
-%description nvidia-open
-    This package provides nvidia-open %{_nv_ver} kernel modules for %{name}.
-
-%post nvidia-open
-    /sbin/depmod -a %{_kver}
-
-%files nvidia-open
-    %license %{_defaultlicensedir}/%{name}-nvidia-open/COPYING
-    %{_kernel_dir}/nvidia
-%endif
 
 %files
