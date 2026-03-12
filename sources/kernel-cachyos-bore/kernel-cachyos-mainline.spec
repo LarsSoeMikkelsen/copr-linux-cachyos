@@ -17,7 +17,7 @@
 %define _kver %{_rpmver}.%{_arch}
 
 %define _tarkver %{version}
-%if %{_stablekver} = 0
+%if %{_stablekver} == 0
     %define _basekver %{_basekver}.%{_stablekver}
 %endif
 
@@ -85,11 +85,6 @@ BuildRequires:  llvm
 # Indexes 0-9 are reserved for the kernel. 10-19 will be reserved for NVIDIA
 Source0:        https://github.com/CachyOS/linux/archive/refs/tags/%{_tag}.tar.gz
 Source1:        https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config
-
-
-https://github.com/CachyOS/linux/archive/refs/tags/cachyos-7.0-rc3-1.tar.gz
-https://github.com/CachyOS/linux/archive/refs/tags/cachyos-7.0-rc3-1.tar.gz
-https://github.com/CachyOS/linux/archive/refs/tags/cachyos-7.0-rc3-1.tar.gz
 
 Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
 
