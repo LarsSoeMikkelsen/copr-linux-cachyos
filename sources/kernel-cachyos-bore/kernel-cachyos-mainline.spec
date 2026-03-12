@@ -43,14 +43,14 @@
 %define _kernel_dir /lib/modules/%{_kver}
 %define _devel_dir %{_usrsrc}/kernels/%{_kver}
 
-%define _patch_src https://raw.githubusercontent.com/CachyOS/kernel-patches/master/%{_basekver}
+%define _patch_src https://raw.githubusercontent.com/CachyOS/kernel-patches/master/%{_basekvershort}
 
 
 %define _module_args KERNEL_UNAME=%{_kver} IGNORE_PREEMPT_RT_PRESENCE=1 SYSSRC=%{_builddir}/linux-%{_tag} SYSOUT=%{_builddir}/linux-%{_tag}
 
 Name:           kernel-cachyos%{?_lto_args:-lto}
 Summary:        Linux BORE %{?_lto_args:+ LTO }Cachy Sauce Kernel by CachyOS with other patches and improvements.
-Version:        %{_basekver}.%{_stablekver}
+Version:        %{_basekvershort}.%{_stablekver}
 Release:        cachyos1%{?_lto_args:.lto}%{?dist}
 License:        GPL-2.0-only
 URL:            https://cachyos.org
