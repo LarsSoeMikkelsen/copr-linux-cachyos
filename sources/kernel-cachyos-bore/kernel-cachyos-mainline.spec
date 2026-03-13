@@ -302,8 +302,8 @@ Recommends:     linux-firmware
     %ghost %attr(0600, root, root) /boot/initramfs-%{_kver}.img
     %ghost %attr(0644, root, root) /boot/symvers-%{_kver}.zst
     %{_kernel_dir}/vmlinuz
-    %{_kernel_dir}/modules.builtin
-    %{_kernel_dir}/modules.builtin.modinfo
+    %ghost %{_kernel_dir}/modules.builtin
+    %ghost %{_kernel_dir}/modules.builtin.modinfo
     %{_kernel_dir}/symvers.zst
     %{_kernel_dir}/config
     %{_kernel_dir}/System.map
