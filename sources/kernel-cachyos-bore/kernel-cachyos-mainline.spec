@@ -12,7 +12,7 @@
 # Linux Kernel Versions
 %define _basekvershort 7
 %define _stablekver 0
-%define _rcver rc4
+%define _rcver rc5
 %define _rpmver %{version}-%{release}
 %define _kver %{_rpmver}.%{_arch}
 
