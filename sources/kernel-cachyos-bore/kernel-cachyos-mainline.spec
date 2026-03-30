@@ -138,7 +138,7 @@ Patch0:         %{_patch_src}/sched/0001-bore-cachy.patch
 
 
 %build
-    %make_build EXTRAVERSION=%{?_rcver:.%{_rcver}}-%{release}.%{_arch} %{?_rcver:SUBLEVEL=} all 
+    %make_build EXTRAVERSION=%{?_rcver:.%{_rcver}}-%{release}.%{_arch} %{?_rcver:SUBLEVEL=0} all 
     %make_build -C tools/bpf/bpftool vmlinux.h feature-clang-bpf-co-re=1
 
 %install
