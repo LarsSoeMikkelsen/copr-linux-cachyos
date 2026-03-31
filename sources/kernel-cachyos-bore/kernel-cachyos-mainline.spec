@@ -302,8 +302,8 @@ Recommends:     linux-firmware
     %ghost %attr(0600, root, root) /boot/initramfs-%{_kver}.img
     %ghost %attr(0644, root, root) /boot/symvers-%{_kver}.zst
     %{_kernel_dir}/vmlinuz
-    %ghost %{_kernel_dir}/modules.builtin
-    %ghost %{_kernel_dir}/modules.builtin.modinfo
+    %{_kernel_dir}/modules.builtin
+    %{_kernel_dir}/modules.builtin.modinfo
     %{_kernel_dir}/symvers.zst
     %{_kernel_dir}/config
     %{_kernel_dir}/System.map
@@ -341,10 +341,10 @@ Requires:       kernel-uname-r = %{_kver}
 
 %files modules
     %dir %{_kernel_dir}
-    %ghost %{_kernel_dir}/modules.order
+    %{_kernel_dir}/modules.order
     %{_kernel_dir}/build
     %{_kernel_dir}/source
-    %ghost %{_kernel_dir}/kernel
+    %{_kernel_dir}/kernel
 
 %package devel
 Summary:        Development package for building kernel modules to match %{name}
