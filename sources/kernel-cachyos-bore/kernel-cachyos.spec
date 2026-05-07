@@ -11,13 +11,13 @@
 
 # Linux Kernel Versions
 %define _basekver 7.0
-%define _stablekver 1
+%define _stablekver 3
 %define _rpmver %{version}-%{release}
 %define _kver %{_rpmver}.%{_arch}
 
 %define _tarkver %{version}
 
-%define _tag cachyos-%{_tarkver}-2
+%define _tag cachyos-%{_tarkver}-1
 
 # Define the tickrate used by the kernel
 # Valid values: 100, 250, 300, 500, 600, 750 and 1000
